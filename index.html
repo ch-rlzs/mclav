@@ -1,137 +1,468 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>chrlzs.dev</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script type="module">
-    // Import Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The Feed — Single HTML</title>
+<meta name="description" content="The Feed — dark experimental single-file site with console, file nav, resume modal, and mock chat." />
+<style>
+  :root{
+    --bg: #071013;
+    --panel: #0b1114;
+    --muted: #98a0a6;
+    --accent: #16a34a; /* emerald */
+    --glass: rgba(255,255,255,0.03);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:var(--bg);
+    color:#dde6ea;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCVMeancUy8l3TBwPUKQZ3wncDPq_8ttfM",
-        authDomain: "chat-36bbf.firebaseapp.com",
-        databaseURL: "https://chat-36bbf-default-rtdb.europe-west1.firebasedatabase.app", // ✅ This is the missing line
-        projectId: "chat-36bbf",
-        storageBucket: "chat-36bbf.appspot.com",
-        messagingSenderId: "417072795608",
-        appId: "1:417072795608:web:b81fd8082a15a829b22cad",
-        measurementId: "G-W7TM0BPR84"
-};
+  /* Layout */
+  .app{display:flex;flex-direction:column;min-height:100vh;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.03);}
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand h1{margin:0;font-size:18px;letter-spacing:0.6px}
+  .nav{display:flex;gap:10px;align-items:center}
 
+  .container{display:flex;flex:1;overflow:hidden}
+  .sidebar{width:260px;border-right:1px solid rgba(255,255,255,0.03);padding:18px;overflow:auto;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+  .main{flex:1;padding:18px;overflow:auto}
 
+  /* Sidebar files */
+  .files-title{color:var(--muted);font-size:13px;margin-bottom:10px}
+  .file{padding:10px;border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:14px}
+  .file:hover{background:rgba(255,255,255,0.02)}
+  .file.active{background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.12)}
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const chatRef = ref(db, 'messages');
+  /* Panels */
+  .grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
+  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.02)}
+  .console{display:flex;flex-direction:column;height:340px;border-radius:10px;overflow:hidden}
+  .console-output{flex:1;background:rgba(0,0,0,0.65);padding:12px;font-family:var(--mono);font-size:13px;overflow:auto}
+  .console-input{display:flex;gap:8px;margin-top:12px}
+  .input{flex:1;padding:10px;border-radius:8px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);color:inherit;font-family:var(--mono);font-size:13px}
+  .btn{padding:8px 12px;border-radius:8px;background:rgba(22,163,74,0.12);border:1px solid rgba(22,163,74,0.18);color:var(--accent);cursor:pointer;font-weight:600}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
 
-    const chatBox = document.getElementById('chatBox');
+  /* file viewer */
+  .viewer{margin-top:16px;padding:12px;background:rgba(0,0,0,0.45);border-radius:10px;font-family:var(--mono);font-size:13px;height:160px;overflow:auto;border:1px solid rgba(255,255,255,0.02)}
+  .viewer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--muted);font-size:13px}
 
-    const badWords = ['badword1', 'badword2'];
-    let username = localStorage.getItem('username') || '';
+  /* chat */
+  .chat-list{height:220px;overflow:auto;padding:8px;border-radius:8px;background:rgba(0,0,0,0.55);font-size:13px}
+  .chat-item{margin-bottom:8px}
+  .chat-item .user{font-weight:700;color:var(--muted);margin-right:6px}
 
-    window.setUsername = function () {
-      username = document.getElementById('username').value.trim();
-      if (username) {
-        localStorage.setItem('username', username);
-        alert(`Username set to ${username}`);
-      }
-    }
+  /* Resume modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:999}
+  .modal{width:94%;max-width:920px;background:linear-gradient(180deg,#07151a,#081117);border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.04)}
+  .modal-grid{display:grid;grid-template-columns:200px 1fr;gap:14px}
+  .resume-nav{display:flex;flex-direction:column;gap:8px}
+  .resume-btn{padding:10px;border-radius:8px;text-align:left;background:transparent;border:1px solid rgba(255,255,255,0.02);cursor:pointer;color:var(--muted)}
+  .resume-btn.active{background:rgba(22,163,74,0.08);color:var(--accent);border-color:rgba(22,163,74,0.12);font-weight:700}
+  .resume-panel{background:rgba(0,0,0,0.45);padding:14px;border-radius:10px;min-height:160px;color:#dfeef0}
 
-    function cleanMessage(msg) {
-      let clean = msg;
-      badWords.forEach(word => {
-        const regex = new RegExp(word, 'gi');
-        clean = clean.replace(regex, '****');
-      });
-      return clean;
-    }
+  /* small screens */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .chat-list{height:140px}
+    .console{height:260px}
+  }
 
-    window.sendMessage = function () {
-      const msgInput = document.getElementById('messageInput');
-      const msg = msgInput.value.trim();
-
-      if (!username) {
-        alert('Please set your username first.');
-        return;
-      }
-      if (!msg) return;
-
-      const clean = cleanMessage(msg);
-
-      push(chatRef, {
-        username: username,
-        message: clean,
-        timestamp: Date.now()
-      });
-
-      msgInput.value = '';
-    }
-
-    onChildAdded(chatRef, snapshot => {
-      const data = snapshot.val();
-      const msgElement = document.createElement('div');
-      msgElement.innerText = `${data.username}: ${data.message}`;
-      chatBox.appendChild(msgElement);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-  </script>
-  <style>
-    body {
-      background-color: #0a0a0a;
-    }
-    .status-active { color: limegreen; }
-    .status-paused { color: orange; }
-    .status-completed { color: dodgerblue; }
-  </style>
+  footer{padding:12px 18px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid rgba(255,255,255,0.02)}
+  a.mail{color:var(--accent);text-decoration:none;font-weight:600}
+  .tag{display:inline-block;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(255,255,255,0.02);color:var(--muted)}
+</style>
 </head>
-<body class="text-white font-sans">
-  <header class="flex justify-between items-center p-4 border-b border-gray-800">
-    <h1 class="text-xl font-bold">Chrlzs.dev</h1>
-    <nav class="space-x-4">
-      <a href="#home" class="hover:underline">Home</a>
-      <a href="#projects" class="hover:underline">Projects</a>
-      <a href="#chat" class="hover:underline">Chat Room</a>
-    </nav>
-  </header>
-
-  <main class="p-6">
-    <!-- Home Section -->
-    <section id="home" class="mb-12">
-      <h2 class="text-2xl font-bold mb-2">Welcome</h2>
-      <p>This is my personal site where I showcase my projects and host a live chat room for feedback and fun.</p>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="mb-12">
-      <h2 class="text-2xl font-bold mb-4">Projects</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-gray-900 p-4 rounded-xl shadow-lg">
-          <h3 class="text-xl font-semibold">Portfolio</h3>
-          <p class="text-sm text-gray-300">This Site</p>
-          <span class="status-active text-sm">● Active</span>
-        </div>
-        <div class="bg-gray-900 p-4 rounded-xl shadow-lg">
-          <h3 class="text-xl font-semibold">The Feed</h3>
-          <p class="text-sm text-gray-300">Chat away.</p>
-          <span class="status-active text-sm">● Active</span>
+<body>
+  <div class="app" id="app">
+    <header>
+      <div class="brand">
+        <button id="toggleSidebar" class="btn ghost" title="toggle sidebar">☰</button>
+        <div>
+          <h1>The Feed</h1>
+          <div style="color:var(--muted);font-size:12px">experimental • dark</div>
         </div>
       </div>
-    </section>
-
-    <!-- Chat Room Section -->
-    <section id="chat">
-      <h2 class="text-2xl font-bold mb-4">Chat Room</h2>
-      <div class="mb-4">
-        <input id="username" class="bg-gray-800 p-2 rounded text-white" placeholder="Enter your username" />
-        <button onclick="setUsername()" class="bg-green-600 px-3 py-1 rounded ml-2">Set Name</button>
+      <div class="nav">
+        <button id="openResume" class="btn">Interactive Resume</button>
+        <button id="signIn" class="btn ghost">Sign in</button>
       </div>
-      <div id="chatBox" class="bg-gray-900 p-4 rounded h-64 overflow-y-scroll mb-4"></div>
-      <input id="messageInput" class="bg-gray-800 p-2 rounded w-3/4" placeholder="Type your message..." />
-      <button onclick="sendMessage()" class="bg-blue-600 px-4 py-2 rounded ml-2">Send</button>
-    </section>
-  </main>
+    </header>
+
+    <div class="container">
+      <aside class="sidebar" id="sidebar">
+        <div class="files-title">Files</div>
+        <div id="fileList">
+          <div class="file active" data-file="home.txt">home.txt</div>
+          <div class="file" data-file="about.txt">about.txt</div>
+          <div class="file" data-file="bot1.log">bot1.log</div>
+          <div class="file" data-file="bot2.log">bot2.log</div>
+          <div class="file" data-file="resume.cv">resume.cv</div>
+        </div>
+        <div style="margin-top:18px;color:var(--muted);font-size:13px">Theme: <span class="tag">DedSec • Dark</span></div>
+      </aside>
+
+      <main class="main">
+        <div class="grid">
+          <div>
+            <div class="panel">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Console</div>
+                <div style="font-size:13px;color:var(--muted)">Type <span style="font-family:var(--mono)">help</span> to start</div>
+              </div>
+
+              <div class="console" style="margin-top:12px">
+                <div class="console-output" id="consoleOutput" aria-live="polite"></div>
+
+                <form id="consoleForm" class="console-input" onsubmit="return false">
+                  <input id="consoleInput" class="input" placeholder="Type a command..." autocomplete="off" />
+                  <button id="runBtn" class="btn">Run</button>
+                </form>
+              </div>
+
+              <div class="viewer-header" style="margin-top:14px">
+                <div>Viewing: <span id="currentFile" style="font-family:var(--mono)">home.txt</span></div>
+                <div style="font-size:12px;color:var(--muted)">Updated: Sep 20, 2025</div>
+              </div>
+
+              <div class="viewer" id="fileViewer" role="region" aria-label="file viewer">
+                <!-- content injected by JS -->
+              </div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button id="clearConsole" class="btn ghost">Clear Console</button>
+              <button id="logView" class="btn">Log View</button>
+            </div>
+          </div>
+
+          <aside>
+            <div class="panel" style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Quick Chat (mock)</div>
+                <div style="font-size:12px;color:var(--muted)">Firebase-ready</div>
+              </div>
+
+              <div class="chat-list" id="chatList" style="margin-top:10px">
+                <!-- chat messages here -->
+              </div>
+
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <input id="chatInput" class="input" placeholder="Say something (mock)..." />
+                <button id="sendChat" class="btn">Send</button>
+              </div>
+
+              <div style="margin-top:10px;font-size:12px;color:var(--muted)">Tip: swap in Firebase config to persist messages.</div>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer>Built with ❤️ — tweak anything. Email: <a class="mail" href="mailto:chrlzs.chizl@gmail.com">chrlzs.chizl@gmail.com</a></footer>
+  </div>
+
+  <!-- Resume Modal (hidden by default) -->
+  <div id="resumeModal" class="modal-backdrop" style="display:none">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Interactive Resume">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0">Interactive Resume</h2>
+        <div>
+          <button id="closeResume" class="btn ghost">Close</button>
+        </div>
+      </div>
+
+      <div class="modal-grid" style="margin-top:12px">
+        <nav class="resume-nav" id="resumeNav">
+          <button class="resume-btn active" data-sec="summary">Summary</button>
+          <button class="resume-btn" data-sec="experience">Experience</button>
+          <button class="resume-btn" data-sec="skills">Skills</button>
+          <button class="resume-btn" data-sec="contact">Contact</button>
+        </nav>
+
+        <section class="resume-panel" id="resumePanel">
+          <!-- injected content -->
+        </section>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // --- initial app state ---
+  const files = {
+    "home.txt": `Welcome to The Feed.
+This virtual file is a sandbox — tinker, play, build.
+
+Commands: help | about | resume | open <file> | clear`,
+    "about.txt": `Hand-crafted site template.
+Designed for a dark, minimal, hacker-adjacent aesthetic.
+
+Swap content freely.`,
+    "bot1.log": `[09:00] bot1: ping
+[09:01] bot1: job started
+[09:02] bot1: done`,
+    "bot2.log": `[09:00] bot2: pong
+[09:01] bot2: checking
+[09:02] bot2: all good`,
+    "resume.cv": `Interactive resume — open the \"Interactive Resume\" button to explore sections.`
+  };
+
+  const resumeSections = {
+    summary: {
+      title: "Summary",
+      content: "Forward-thinking developer, tinkerer, and farmer-adjacent creator. Loves clean UI, fast apps, and solving dumb problems in elegant ways."
+    },
+    experience: {
+      title: "Experience",
+      content: "Projects: The Feed (this site), KeyAuth-inspired dashboard (planning), Firebase-powered chat prototypes."
+    },
+    skills: {
+      title: "Skills",
+      content: "JS, React, Python, Firebase, Tailwind, UX prototyping."
+    },
+    contact: {
+      title: "Contact",
+      content: "Email: chrlzs.chizl@gmail.com"
+    }
+  };
+
+  // DOM refs
+  const consoleOutput = document.getElementById('consoleOutput');
+  const consoleInput = document.getElementById('consoleInput');
+  const runBtn = document.getElementById('runBtn');
+  const consoleForm = document.getElementById('consoleForm');
+  const fileViewer = document.getElementById('fileViewer');
+  const currentFile = document.getElementById('currentFile');
+  const fileList = document.getElementById('fileList');
+  const chatList = document.getElementById('chatList');
+  const chatInput = document.getElementById('chatInput');
+  const sendChat = document.getElementById('sendChat');
+  const openResume = document.getElementById('openResume');
+  const resumeModal = document.getElementById('resumeModal');
+  const resumeNav = document.getElementById('resumeNav');
+  const resumePanel = document.getElementById('resumePanel');
+  const closeResume = document.getElementById('closeResume');
+  const toggleSidebar = document.getElementById('toggleSidebar');
+  const sidebar = document.getElementById('sidebar');
+  const clearConsoleBtn = document.getElementById('clearConsole');
+  const logViewBtn = document.getElementById('logView');
+
+  // state
+  let current = 'home.txt';
+  let consoleLines = ["Welcome to The Feed. Type 'help' to begin."];
+  let chatMessages = [{user:'system',text:'Chat initialized. (mock)'}];
+
+  // renderers
+  function renderConsole(){
+    consoleOutput.innerHTML = '';
+    consoleLines.forEach(line=>{
+      const div = document.createElement('div');
+      if(line.startsWith('> ')){
+        div.style.color = 'var(--accent)';
+        div.style.fontFamily = 'var(--mono)';
+        div.textContent = line;
+      } else {
+        div.style.color = '#dfeef0';
+        div.style.fontSize = '13px';
+        div.textContent = line;
+      }
+      consoleOutput.appendChild(div);
+    });
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+  }
+
+  function renderFile(){
+    currentFile.textContent = current;
+    fileViewer.textContent = files[current] || `File not found: ${current}`;
+  }
+
+  function setActiveFile(name){
+    current = name;
+    // toggle active class in sidebar
+    Array.from(fileList.querySelectorAll('.file')).forEach(el=>{
+      el.classList.toggle('active', el.dataset.file === name);
+    });
+    renderFile();
+  }
+
+  function renderChat(){
+    chatList.innerHTML = '';
+    chatMessages.forEach(m=>{
+      const div = document.createElement('div');
+      div.className = 'chat-item';
+      const userSpan = document.createElement('span');
+      userSpan.className = 'user';
+      userSpan.textContent = m.user + ':';
+      const textSpan = document.createElement('span');
+      textSpan.textContent = ' ' + m.text;
+      div.appendChild(userSpan);
+      div.appendChild(textSpan);
+      chatList.appendChild(div);
+    });
+    chatList.scrollTop = chatList.scrollHeight;
+  }
+
+  // commands
+  function processCommand(cmdRaw){
+    const cmd = cmdRaw.trim();
+    if(!cmd) return;
+    consoleLines.push('> ' + cmd);
+    const lower = cmd.toLowerCase();
+    if(lower === 'help'){
+      consoleLines.push("Available commands: help | about | resume | open <file> | clear");
+    } else if(lower === 'about'){
+      consoleLines.push("The Feed — slick, small, fast. Built for devs and creators.");
+    } else if(lower === 'resume'){
+      openResumeModal();
+      consoleLines.push("Opening interactive resume...");
+    } else if(lower.startsWith('open ')){
+      const target = cmd.slice(5).trim();
+      const fileName = target.includes('.') ? target : (target + '.txt');
+      if(files[fileName]){
+        setActiveFile(fileName);
+        consoleLines.push(`Opened ${fileName}`);
+      } else {
+        consoleLines.push(`File not found: ${fileName}`);
+      }
+    } else if(lower === 'clear'){
+      consoleLines = [];
+    } else {
+      consoleLines.push(`Unknown command: ${cmd}. Try 'help'.`);
+    }
+    renderConsole();
+  }
+
+  // event handlers
+  consoleForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const val = consoleInput.value;
+    processCommand(val);
+    consoleInput.value = '';
+  });
+
+  runBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const val = consoleInput.value;
+    processCommand(val);
+    consoleInput.value = '';
+  });
+
+  // sidebar file clicks
+  fileList.addEventListener('click', (e)=>{
+    const file = e.target.closest('.file');
+    if(!file) return;
+    const name = file.dataset.file;
+    setActiveFile(name);
+    consoleLines.push(`Opened ${name}`);
+    renderConsole();
+  });
+
+  // chat send
+  sendChat.addEventListener('click', ()=>{
+    const txt = chatInput.value.trim();
+    if(!txt) return;
+    chatMessages.push({user:'you',text:txt});
+    chatInput.value = '';
+    renderChat();
+  });
+
+  chatInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){ e.preventDefault(); sendChat.click(); }
+  });
+
+  // resume modal
+  function openResumeModal(){
+    resumeModal.style.display = 'flex';
+    setResumeSection('summary');
+  }
+  function closeResumeModal(){
+    resumeModal.style.display = 'none';
+  }
+
+  openResume.addEventListener('click', openResumeModal);
+  closeResume.addEventListener('click', closeResumeModal);
+  resumeModal.addEventListener('click', (e)=>{
+    if(e.target === resumeModal) closeResumeModal();
+  });
+
+  resumeNav.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.resume-btn');
+    if(!btn) return;
+    const sec = btn.dataset.sec;
+    setResumeSection(sec);
+  });
+
+  function setResumeSection(sec){
+    // toggle active
+    Array.from(resumeNav.querySelectorAll('.resume-btn')).forEach(b=>{
+      b.classList.toggle('active', b.dataset.sec === sec);
+    });
+    const data = resumeSections[sec];
+    resumePanel.innerHTML = `<h3 style="margin:0">${data.title}</h3><p style="margin-top:8px;color:#cfe8ea">${data.content}</p>
+      <div style="margin-top:12px"><button class="btn" id="logResume">Log</button> <a class="mail" href="mailto:chrlzs.chizl@gmail.com">Email</a></div>`;
+    // attach log button handler
+    const logBtn = document.getElementById('logResume');
+    if(logBtn) logBtn.addEventListener('click', ()=>{
+      consoleLines.push(\`Viewed resume section: \${data.title}\`);
+      renderConsole();
+    });
+  }
+
+  // sidebar toggle
+  toggleSidebar.addEventListener('click', ()=>{
+    const shown = sidebar.style.display !== 'none';
+    sidebar.style.display = shown ? 'none' : 'block';
+  });
+
+  // clear console
+  clearConsoleBtn.addEventListener('click', ()=>{
+    consoleLines = [];
+    renderConsole();
+  });
+
+  // log view: open the bot1.log
+  logViewBtn.addEventListener('click', ()=>{
+    setActiveFile('bot1.log');
+    consoleLines.push('Opened bot1.log');
+    renderConsole();
+  });
+
+  // init
+  setActiveFile(current);
+  renderConsole();
+  renderChat();
+
+  // keyboard: focus console with backtick (`) — fast hacky shortcut
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === '`'){ consoleInput.focus(); e.preventDefault(); }
+    if(e.key === 'Escape'){ closeResumeModal(); }
+  });
+
+  // --- Accessibility niceties ---
+  // ensure focus order for main interactive elements
+  consoleInput.setAttribute('aria-label', 'Console input');
+  chatInput.setAttribute('aria-label', 'Chat input');
+
+  // Placeholder: Firebase integration comment
+  // To persist chat/messages and add auth, replace the mock chat code with Firebase SDK.
+  // Steps (high level):
+  // 1) include Firebase CDN SDK scripts
+  // 2) initialize app with your config
+  // 3) hook chat send to push to database and listen for updates to renderChat()
+  // I can generate that exact script for you if you want — drop your Firebase details or say "add Firebase".
+
+})();
+</script>
 </body>
 </html>
