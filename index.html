@@ -1,199 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Feed — fixed</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-color: #121212;
+    --text-color: #f0f0f0;
+    --accent-color: #00ffea;
+  }
+  [data-theme="light"] {
+    --bg-color: #f0f0f0;
+    --text-color: #121212;
+    --accent-color: #0077ff;
+  }
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--accent-color);
+  }
+  header h1 {
+    margin: 0;
+  }
+  .theme-toggle {
+    cursor: pointer;
+    padding: 10px 15px;
+    border: 1px solid var(--accent-color);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: bold;
+  }
+  section {
+    padding: 50px 20px;
+    max-width: 1000px;
+    margin: auto;
+  }
+  h2 {
+    margin-bottom: 20px;
+    color: var(--accent-color);
+  }
+  /* About Me */
+  #about p {
+    max-width: 600px;
+    line-height: 1.6;
+  }
+  /* Skills */
+  .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .skill {
+    flex: 1 1 150px;
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  .skill-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    margin-top: 5px;
+    overflow: hidden;
+  }
+  .skill-bar span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--accent-color);
+    transition: width 1s ease;
+  }
+  /* Projects */
+  .filters {
+    margin-bottom: 20px;
+  }
+  .filters button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: 1px solid var(--accent-color);
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .project {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .project:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--accent-color);
+  }
+  .project h3 {
+    margin-top: 0;
+    color: var(--accent-color);
+  }
+  /* Contact */
+  #contact a {
+    display: inline-block;
+    margin-right: 15px;
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: bold;
+  }
+</style>
 </head>
-<body class="min-h-screen bg-[#071013] text-slate-200 font-sans antialiased">
-  <header class="flex items-center justify-between p-4 border-b border-slate-800">
-    <div class="flex items-center gap-3">
-      <button id="toggleSidebar" class="px-2 py-1 rounded-md bg-slate-900/40 hover:bg-slate-900/60">☰</button>
-      <h1 class="text-xl font-semibold tracking-tight">The Feed</h1>
-      <span class="text-sm text-slate-400 ml-2">/ experimental</span>
+<body data-theme="dark">
+
+<header>
+  <h1>My Portfolio</h1>
+  <button class="theme-toggle">Toggle Theme</button>
+</header>
+
+<section id="about">
+  <h2>About Me</h2>
+  <p>Hey! I’m [Your Name], a developer passionate about creating sleek and modern web experiences. I love building interactive projects that make users say “wow.”</p>
+</section>
+
+<section id="skills">
+  <h2>Skills</h2>
+  <div class="skills-container">
+    <div class="skill">
+      HTML/CSS/JS
+      <div class="skill-bar"><span style="width: 90%;"></span></div>
     </div>
-    <nav class="flex items-center gap-3">
-      <button id="openResume" class="px-3 py-1 rounded-md bg-slate-900/40 hover:bg-slate-900/60">Interactive Resume</button>
-      <button class="px-3 py-1 rounded-md bg-emerald-600/20 hover:bg-emerald-600/30">Sign In</button>
-    </nav>
-  </header>
-
-  <main class="flex">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-64 border-r border-slate-800 p-4 hidden md:block">
-      <div class="mb-4 text-slate-300 font-medium">Files</div>
-      <ul class="space-y-2 text-sm">
-        <li data-file="home.txt" class="file p-2 rounded-md hover:bg-slate-800/50 cursor-pointer bg-slate-800/60">home.txt</li>
-        <li data-file="about.txt" class="file p-2 rounded-md hover:bg-slate-800/50 cursor-pointer">about.txt</li>
-        <li data-file="bot1.log" class="file p-2 rounded-md hover:bg-slate-800/50 cursor-pointer">bot1.log</li>
-        <li data-file="bot2.log" class="file p-2 rounded-md hover:bg-slate-800/50 cursor-pointer">bot2.log</li>
-        <li data-file="resume.cv" class="file p-2 rounded-md hover:bg-slate-800/50 cursor-pointer">resume.cv</li>
-      </ul>
-      <div class="mt-6 text-slate-400 text-xs">Theme: DedSec • Dark</div>
-    </aside>
-
-    <section class="flex-1 p-6">
-      <!-- Console -->
-      <div class="rounded-2xl shadow-md p-4 bg-gradient-to-b from-slate-900/60 to-slate-900/40">
-        <div id="consoleOutput" class="h-64 md:h-72 rounded-lg overflow-auto p-3 bg-black/70 font-mono text-sm">
-          <div>Welcome to The Feed. Type 'help' to begin.</div>
-        </div>
-        <form id="consoleForm" class="mt-3 flex items-center gap-2">
-          <input id="consoleInput" placeholder="Type a command..." class="flex-1 bg-black/80 placeholder-slate-500 p-2 rounded-md font-mono outline-none" />
-          <button type="submit" class="px-3 py-2 rounded-md bg-emerald-600/30 hover:bg-emerald-600/40">Run</button>
-        </form>
-      </div>
-
-      <!-- File viewer -->
-      <div class="mt-6 rounded-lg p-4 bg-slate-900/30 border border-slate-800">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-slate-300">Viewing: <span id="fileName" class="font-mono">home.txt</span></div>
-          <div class="text-xs text-slate-400">Updated: Sep 20, 2025</div>
-        </div>
-        <div id="fileContent" class="mt-3 text-sm text-slate-200 bg-black/20 p-3 rounded-md font-mono h-36 overflow-auto">
-          Welcome to The Feed.
-          This virtual file is a sandbox — tinker, play, build.
-          
-          Commands: help, about, resume, open &lt;file&gt;, clear
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Resume Modal -->
-  <div id="resumeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60">
-    <div class="w-11/12 md:w-3/5 bg-slate-900 rounded-2xl p-6 shadow-2xl">
-      <div class="flex items-start justify-between">
-        <h2 class="text-xl font-semibold">Interactive Resume</h2>
-        <button id="closeResume" class="text-slate-400 hover:text-slate-100">✕</button>
-      </div>
-      <div class="mt-4">
-        <h3 class="font-medium">Summary</h3>
-        <p class="mt-2 text-sm text-slate-200">Forward-thinking developer, tinkerer, and creator. Loves clean UI, fast apps, and solving problems elegantly.</p>
-        <p class="mt-4 text-sm">Email: <a href="mailto:chrlzs.chizl@gmail.com" class="text-emerald-400">chrlzs.chizl@gmail.com</a></p>
-      </div>
+    <div class="skill">
+      React
+      <div class="skill-bar"><span style="width: 75%;"></span></div>
+    </div>
+    <div class="skill">
+      Python
+      <div class="skill-bar"><span style="width: 80%;"></span></div>
+    </div>
+    <div class="skill">
+      Git/GitHub
+      <div class="skill-bar"><span style="width: 85%;"></span></div>
     </div>
   </div>
+</section>
 
-  <footer class="p-4 text-center text-xs text-slate-500">Built with ❤️ — tweak anything. Tip: add Firebase for persistence.</footer>
+<section id="projects">
+  <h2>Projects</h2>
+  <div class="filters">
+    <button data-filter="all">All</button>
+    <button data-filter="web">Web</button>
+    <button data-filter="game">Game</button>
+    <button data-filter="other">Other</button>
+  </div>
+  <div class="projects-grid" id="projectsGrid">
+    <!-- Projects will be dynamically added here -->
+  </div>
+</section>
 
-  <script>
-    // Grab elements (use distinct variable names to avoid accidental shadowing)
-    const sidebar = document.getElementById('sidebar');
-    const toggleSidebar = document.getElementById('toggleSidebar');
-    const fileEls = document.querySelectorAll('.file');
-    const fileName = document.getElementById('fileName');
-    const fileContent = document.getElementById('fileContent');
+<section id="contact">
+  <h2>Contact</h2>
+  <a href="https://github.com/YOUR_GITHUB" target="_blank">GitHub</a>
+  <a href="https://www.tiktok.com/@YOUR_TIKTOK" target="_blank">TikTok</a>
+  <a href="https://discord.com/users/YOUR_DISCORD" target="_blank">Discord</a>
+</section>
 
-    // Simple in-memory files
-    const files = {
-      'home.txt': 'Welcome to The Feed.
-This virtual file is a sandbox — tinker, play, build.
+<script>
+// Dark/Light Mode Toggle
+const toggle = document.querySelector('.theme-toggle');
+toggle.addEventListener('click', () => {
+  document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+});
 
-Commands: help, about, resume, open <file>, clear',
-      'about.txt': 'Hand-crafted site template. Dark, minimal, hacker-adjacent aesthetic.',
-      'bot1.log': '[09:00] bot1: ping
-[09:01] bot1: job started
-[09:02] bot1: done',
-      'bot2.log': '[09:00] bot2: pong
-[09:01] bot2: checking
-[09:02] bot2: all good',
-      'resume.cv': 'Interactive resume — open the "Interactive Resume" button to explore sections.'
-    };
+// GitHub Dynamic Projects
+const username = 'YOUR_GITHUB'; // replace with your GitHub username
+const projectsGrid = document.getElementById('projectsGrid');
 
-    // Sidebar toggling
-    if(toggleSidebar){
-      toggleSidebar.addEventListener('click', ()=>{
-        if(sidebar) sidebar.classList.toggle('hidden');
-      });
-    }
-
-    // File clicks
-    fileEls.forEach(el => {
-      el.addEventListener('click', ()=>{
-        // Clear any active marker classes from all file elements
-        fileEls.forEach(f => f.classList.remove('bg-slate-800/60'));
-        el.classList.add('bg-slate-800/60');
-
-        const name = el.dataset.file;
-        fileName.textContent = name;
-
-        if(files[name]){
-          // textContent is safe — it won't be parsed as HTML
-          fileContent.textContent = files[name];
-        } else if(name && name.endsWith('.log')){
-          fileContent.textContent = 'Log stream (mock):
-[09:00] bot1: ping
-[09:01] bot2: pong
-[09:02] system: all good';
-        } else {
-          fileContent.textContent = files['home.txt'];
-        }
-      });
-    });
-
-    // Console logic
-    const consoleForm = document.getElementById('consoleForm');
-    const consoleInput = document.getElementById('consoleInput');
-    const consoleOutput = document.getElementById('consoleOutput');
-
-    function addLine(text, isCommand){
-      if(!consoleOutput) return;
+fetch(`https://api.github.com/users/${username}/repos`)
+  .then(res => res.json())
+  .then(data => {
+    data.forEach(repo => {
       const div = document.createElement('div');
-      div.textContent = (isCommand ? '> ' : '') + text;
-      div.className = isCommand ? 'text-emerald-300' : 'text-slate-300';
-      consoleOutput.appendChild(div);
-      consoleOutput.scrollTop = consoleOutput.scrollHeight;
-    }
-
-    if(consoleForm){
-      consoleForm.addEventListener('submit', function(e){
-        e.preventDefault();
-        const cmd = consoleInput.value.trim();
-        if(!cmd) return;
-        addLine(cmd, true);
-        const low = cmd.toLowerCase();
-        if(low === 'help'){
-          addLine('Available: help | about | resume | open <file> | clear');
-        } else if(low === 'about'){
-          addLine('The Feed — slick, small, fast. Built for devs and creators.');
-        } else if(low === 'resume'){
-          const modal = document.getElementById('resumeModal');
-          if(modal) modal.classList.remove('hidden');
-          addLine('Opening interactive resume...');
-        } else if(low.startsWith('open ')){
-          const parts = cmd.split(' ');
-          const target = parts[1] || '';
-          const fname = target.includes('.') ? target : (target + '.txt');
-          if(files[fname]){
-            fileName.textContent = fname;
-            fileContent.textContent = files[fname];
-            addLine('Opened ' + fname);
-          } else {
-            addLine('File not found: ' + fname);
-          }
-        } else if(low === 'clear'){
-          if(consoleOutput) consoleOutput.innerHTML = '';
-        } else {
-          addLine('Unknown command: ' + cmd + '. Try \"help\".');
-        }
-        consoleInput.value = '';
-      });
-    }
-
-    // Resume modal buttons
-    const openResume = document.getElementById('openResume');
-    const closeResume = document.getElementById('closeResume');
-    if(openResume){ openResume.addEventListener('click', ()=>{ const m = document.getElementById('resumeModal'); if(m) m.classList.remove('hidden'); }); }
-    if(closeResume){ closeResume.addEventListener('click', ()=>{ const m = document.getElementById('resumeModal'); if(m) m.classList.add('hidden'); }); }
-
-    // Quick safety: focus console on backtick, close modal on Escape
-    window.addEventListener('keydown', function(e){
-      if(e.key === '`' && consoleInput) { consoleInput.focus(); e.preventDefault(); }
-      if(e.key === 'Escape'){ const m = document.getElementById('resumeModal'); if(m) m.classList.add('hidden'); }
+      div.className = 'project';
+      div.innerHTML = `
+        <h3>${repo.name}</h3>
+        <p>${repo.description ? repo.description : 'No description provided.'}</p>
+        <a href="${repo.html_url}" target="_blank">View Repo</a>
+      `;
+      projectsGrid.appendChild(div);
     });
+  });
 
-  </script>
+// Project Filters (basic, based on topics in repo description)
+const filterButtons = document.querySelectorAll('.filters button');
+filterButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.project').forEach(proj => {
+      const text = proj.textContent.toLowerCase();
+      if (filter === 'all' || text.includes(filter)) {
+        proj.style.display = 'block';
+      } else {
+        proj.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+
 </body>
 </html>
