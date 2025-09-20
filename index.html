@@ -25,10 +25,11 @@
     text-align: center;
     animation: float 3s ease-in-out infinite;
     cursor: default;
+    color: rgba(128, 0, 128, 0.5); /* dark purple with transparency */
   }
 
   #animatedText:hover {
-    color: #ff00ff;
+    color: rgba(255, 0, 255, 0.7); /* brighter purple on hover */
     transform: translate(-50%, -50%) scale(1.2);
     transition: all 0.3s ease;
   }
@@ -60,12 +61,15 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Star class
 class Star {
   constructor(){
     this.x = Math.random() * canvas.width;
     this.y = Math.random() * canvas.height;
     this.size = Math.random() * 2;
     this.speed = Math.random() * 0.5;
+    this.alpha = Math.random();
+    this.alphaDirection = Math.random() < 0.5 ? 1 : -1; // for twinkle
   }
   update() {
     this.y -= this.speed;
@@ -73,24 +77,62 @@ class Star {
       this.y = canvas.height;
       this.x = Math.random() * canvas.width;
     }
+    // Twinkle
+    this.alpha += 0.01 * this.alphaDirection;
+    if(this.alpha <= 0) this.alphaDirection = 1;
+    if(this.alpha >= 1) this.alphaDirection = -1;
   }
   draw() {
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
     ctx.fill();
   }
 }
 
-let stars = [];
-for(let i=0; i<200; i++){
-  stars.push(new Star());
+// Shooting star class
+class ShootingStar {
+  constructor(){
+    this.reset();
+  }
+  reset(){
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height / 2;
+    this.len = Math.random() * 100 + 50;
+    this.speed = Math.random() * 5 + 5;
+    this.angle = Math.PI / 4; // 45 degrees
+    this.active = true;
+  }
+  update() {
+    this.x += this.speed * Math.cos(this.angle);
+    this.y += this.speed * Math.sin(this.angle);
+    if(this.x > canvas.width || this.y > canvas.height){
+      this.reset();
+    }
+  }
+  draw() {
+    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(this.x - this.len * Math.cos(this.angle), this.y - this.len * Math.sin(this.angle));
+    ctx.stroke();
+  }
 }
+
+let stars = [];
+let shootingStars = [];
+
+// Initialize stars
+for(let i=0; i<200; i++) stars.push(new Star());
+// Initialize shooting stars
+for(let i=0; i<3; i++) shootingStars.push(new ShootingStar());
 
 function animate() {
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  stars.forEach(star => { star.update(); star.draw(); });
+  stars.forEach(s => { s.update(); s.draw(); });
+  shootingStars.forEach(s => { s.update(); s.draw(); });
   requestAnimationFrame(animate);
 }
 
@@ -100,9 +142,9 @@ window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   stars = [];
-  for(let i=0; i<200; i++){
-    stars.push(new Star());
-  }
+  for(let i=0; i<200; i++) stars.push(new Star());
+  shootingStars = [];
+  for(let i=0; i<3; i++) shootingStars.push(new ShootingStar());
 });
 </script>
 
