@@ -3,224 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Portfolio</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<title>Nothing Here Yet</title>
 <style>
-  :root {
-    --bg-color: #121212;
-    --text-color: #f0f0f0;
-    --accent-color: #00ffea;
-  }
-  [data-theme="light"] {
-    --bg-color: #f0f0f0;
-    --text-color: #121212;
-    --accent-color: #0077ff;
-  }
-  body {
+  body, html {
     margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: all 0.3s ease;
-  }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid var(--accent-color);
-  }
-  header h1 {
-    margin: 0;
-  }
-  .theme-toggle {
-    cursor: pointer;
-    padding: 10px 15px;
-    border: 1px solid var(--accent-color);
-    border-radius: 5px;
-    background: transparent;
-    color: var(--text-color);
-    font-weight: bold;
-  }
-  section {
-    padding: 50px 20px;
-    max-width: 1000px;
-    margin: auto;
-  }
-  h2 {
-    margin-bottom: 20px;
-    color: var(--accent-color);
-  }
-  /* About Me */
-  #about p {
-    max-width: 600px;
-    line-height: 1.6;
-  }
-  /* Skills */
-  .skills-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-  .skill {
-    flex: 1 1 150px;
-    background: rgba(255,255,255,0.1);
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-  }
-  .skill-bar {
-    height: 8px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 4px;
-    margin-top: 5px;
+    padding: 0;
     overflow: hidden;
-  }
-  .skill-bar span {
-    display: block;
     height: 100%;
-    width: 0%;
-    background: var(--accent-color);
-    transition: width 1s ease;
+    background: #0d0d0d;
+    font-family: 'Arial', sans-serif;
   }
-  /* Projects */
-  .filters {
-    margin-bottom: 20px;
+
+  /* Particle canvas */
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
   }
-  .filters button {
-    margin-right: 10px;
-    padding: 5px 10px;
-    border: 1px solid var(--accent-color);
-    background: transparent;
-    color: var(--text-color);
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-  }
-  .project {
-    background: rgba(255,255,255,0.05);
-    padding: 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .project:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 15px var(--accent-color);
-  }
-  .project h3 {
-    margin-top: 0;
-    color: var(--accent-color);
-  }
-  /* Contact */
-  #contact a {
-    display: inline-block;
-    margin-right: 15px;
-    color: var(--accent-color);
-    text-decoration: none;
+
+  /* Animated text */
+  #animatedText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
     font-weight: bold;
+    color: #00ffea;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    z-index: 1;
+  }
+
+  #animatedText:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    color: #ff00ff;
   }
 </style>
 </head>
-<body data-theme="dark">
+<body>
 
-<header>
-  <h1>My Portfolio</h1>
-  <button class="theme-toggle">Toggle Theme</button>
-</header>
-
-<section id="about">
-  <h2>About Me</h2>
-  <p>Hey! I’m [Your Name], a developer passionate about creating sleek and modern web experiences. I love building interactive projects that make users say “wow.”</p>
-</section>
-
-<section id="skills">
-  <h2>Skills</h2>
-  <div class="skills-container">
-    <div class="skill">
-      HTML/CSS/JS
-      <div class="skill-bar"><span style="width: 90%;"></span></div>
-    </div>
-    <div class="skill">
-      React
-      <div class="skill-bar"><span style="width: 75%;"></span></div>
-    </div>
-    <div class="skill">
-      Python
-      <div class="skill-bar"><span style="width: 80%;"></span></div>
-    </div>
-    <div class="skill">
-      Git/GitHub
-      <div class="skill-bar"><span style="width: 85%;"></span></div>
-    </div>
-  </div>
-</section>
-
-<section id="projects">
-  <h2>Projects</h2>
-  <div class="filters">
-    <button data-filter="all">All</button>
-    <button data-filter="web">Web</button>
-    <button data-filter="game">Game</button>
-    <button data-filter="other">Other</button>
-  </div>
-  <div class="projects-grid" id="projectsGrid">
-    <!-- Projects will be dynamically added here -->
-  </div>
-</section>
-
-<section id="contact">
-  <h2>Contact</h2>
-  <a href="https://github.com/YOUR_GITHUB" target="_blank">GitHub</a>
-  <a href="https://www.tiktok.com/@YOUR_TIKTOK" target="_blank">TikTok</a>
-  <a href="https://discord.com/users/YOUR_DISCORD" target="_blank">Discord</a>
-</section>
+<canvas id="particles"></canvas>
+<div id="animatedText">Nothing here just yet</div>
 
 <script>
-// Dark/Light Mode Toggle
-const toggle = document.querySelector('.theme-toggle');
-toggle.addEventListener('click', () => {
-  document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+// Particle background
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particlesArray = [];
+
+class Particle {
+  constructor(){
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 3 + 1;
+    this.speedX = Math.random() * 1 - 0.5;
+    this.speedY = Math.random() * 1 - 0.5;
+    this.color = 'rgba(0,255,255,0.7)';
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+  }
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function initParticles() {
+  particlesArray = [];
+  for(let i=0; i<100; i++){
+    particlesArray.push(new Particle());
+  }
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particlesArray.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animateParticles);
+}
+
+initParticles();
+animateParticles();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  initParticles();
 });
 
-// GitHub Dynamic Projects
-const username = 'YOUR_GITHUB'; // replace with your GitHub username
-const projectsGrid = document.getElementById('projectsGrid');
+// Animated floating text movement
+const text = document.getElementById('animatedText');
+let dx = 2;
+let dy = 2;
+let posX = window.innerWidth/2;
+let posY = window.innerHeight/2;
 
-fetch(`https://api.github.com/users/${username}/repos`)
-  .then(res => res.json())
-  .then(data => {
-    data.forEach(repo => {
-      const div = document.createElement('div');
-      div.className = 'project';
-      div.innerHTML = `
-        <h3>${repo.name}</h3>
-        <p>${repo.description ? repo.description : 'No description provided.'}</p>
-        <a href="${repo.html_url}" target="_blank">View Repo</a>
-      `;
-      projectsGrid.appendChild(div);
-    });
-  });
+function moveText() {
+  posX += dx;
+  posY += dy;
 
-// Project Filters (basic, based on topics in repo description)
-const filterButtons = document.querySelectorAll('.filters button');
-filterButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const filter = btn.dataset.filter;
-    document.querySelectorAll('.project').forEach(proj => {
-      const text = proj.textContent.toLowerCase();
-      if (filter === 'all' || text.includes(filter)) {
-        proj.style.display = 'block';
-      } else {
-        proj.style.display = 'none';
-      }
-    });
-  });
-});
+  if(posX + text.offsetWidth/2 > window.innerWidth || posX - text.offsetWidth/2 < 0) dx *= -1;
+  if(posY + text.offsetHeight/2 > window.innerHeight || posY - text.offsetHeight/2 < 0) dy *= -1;
+
+  text.style.left = posX + 'px';
+  text.style.top = posY + 'px';
+
+  requestAnimationFrame(moveText);
+}
+
+moveText();
 </script>
 
 </body>
