@@ -1,152 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nothing Here Yet</title>
-<style>
-  body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: 'Arial', sans-serif;
-    background: #000;
-  }
-
-  #animatedText {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3rem;
-    font-weight: bold;
-    text-align: center;
-    animation: float 3s ease-in-out infinite;
-    cursor: default;
-    color: rgba(128, 0, 128, 0.5); /* dark purple with transparency */
-    text-shadow: 0 0 10px rgba(128, 0, 128, 0.5);
-  }
-
-  #animatedText:hover {
-    color: rgba(255, 0, 255, 0.7);
-    transform: translate(-50%, -50%) scale(1.2);
-    text-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
-    transition: all 0.3s ease;
-  }
-
-  @keyframes float {
-    0% { transform: translate(-50%, -50%) translateY(0); }
-    50% { transform: translate(-50%, -50%) translateY(-15px); }
-    100% { transform: translate(-50%, -50%) translateY(0); }
-  }
-
-  canvas {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RockBuddy — Adoption Agency</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <h1>RockBuddy</h1>
+        <p>The pet that won’t die. Probably.</p>
+      </div>
+      <div class="split">
+        <span class="pill">Desktop-first</span>
+        <span class="pill">Local save</span>
+        <span class="pill">Zero guilt (mostly)</span>
+      </div>
+    </div>
 
-<canvas id="space"></canvas>
-<div id="animatedText">You're early....</div>
+    <div class="grid">
+      <div class="card hero">
+        <h2>The Adoption Agency</h2>
+        <p>
+          Choose your rock. Give it a name. Pretend you’re not emotionally attached within 48 hours.
+        </p>
 
-<script>
-const canvas = document.getElementById('space');
-const ctx = canvas.getContext('2d');
+        <div class="form-row">
+          <input id="rockName" class="input" placeholder="Name your rock (or generate one)" maxlength="32" />
+          <button id="genName" class="btn">Generate</button>
+        </div>
+        <div class="form-row">
+          <button id="adopt" class="btn primary">Adopt Now</button>
+          <span class="small">Tip: press <span class="kbd">G</span> to generate</span>
+        </div>
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+        <div class="hr"></div>
+        <p class="small">
+          If you already adopted a rock earlier, adopting again overwrites the save. Yes, that’s ruthless. So are you.
+        </p>
+      </div>
 
-// Star class
-class Star {
-  constructor(){
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.size = Math.random() * 1.5 + 0.5; // size of star
-    this.speed = Math.random() * 0.2 + 0.05; // slow vertical movement
-    this.alpha = Math.random();
-    this.alphaDirection = Math.random() < 0.5 ? 1 : -1; // for twinkle
-  }
-  update() {
-    this.y -= this.speed;
-    if(this.y < 0) {
-      this.y = canvas.height;
-      this.x = Math.random() * canvas.width;
-    }
-    // Twinkle
-    this.alpha += 0.01 * this.alphaDirection;
-    if(this.alpha <= 0) this.alphaDirection = 1;
-    if(this.alpha >= 1) this.alphaDirection = -1;
-  }
-  draw() {
-    ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-    ctx.fill();
-  }
-}
+      <div class="card rock-picker">
+        <h2 style="margin:0 0 6px 0; font-size:18px;">Pick a personality</h2>
+        <p class="small" style="margin:0 0 10px 0;">
+          Pick based on how much chaos you can handle.
+        </p>
 
-// Shooting star class
-class ShootingStar {
-  constructor(){
-    this.reset();
-  }
-  reset(){
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height / 2;
-    this.len = Math.random() * 100 + 50;
-    this.speed = Math.random() * 5 + 5;
-    this.angle = Math.PI / 4; // 45 degrees
-  }
-  update() {
-    this.x += this.speed * Math.cos(this.angle);
-    this.y += this.speed * Math.sin(this.angle);
-    if(this.x > canvas.width || this.y > canvas.height){
-      this.reset();
-    }
-  }
-  draw() {
-    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.x - this.len * Math.cos(this.angle), this.y - this.len * Math.sin(this.angle));
-    ctx.stroke();
-  }
-}
+        <div class="rock-list" id="rockList"></div>
+      </div>
+    </div>
+  </div>
 
-let stars = [];
-let shootingStars = [];
-
-// Initialize stars
-for(let i=0; i<250; i++) stars.push(new Star());
-// Initialize shooting stars
-for(let i=0; i<3; i++) shootingStars.push(new ShootingStar());
-
-function animate() {
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  stars.forEach(s => { s.update(); s.draw(); });
-  shootingStars.forEach(s => { s.update(); s.draw(); });
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  stars = [];
-  for(let i=0; i<250; i++) stars.push(new Star());
-  shootingStars = [];
-  for(let i=0; i<3; i++) shootingStars.push(new ShootingStar());
-});
-</script>
-
+  <script src="app.js"></script>
+  <script>
+    RockBuddy.initAdoptionPage();
+  </script>
 </body>
 </html>
