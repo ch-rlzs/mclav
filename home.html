@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RockBuddy — Home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <h1>RockBuddy</h1>
+        <p id="subtitle">Rock’s Home</p>
+      </div>
+      <div class="split">
+        <button id="reset" class="btn danger">Reset Rock</button>
+        <a class="btn" href="index.html">Back to Agency</a>
+      </div>
+    </div>
+
+    <div class="home">
+      <div class="card stage">
+        <div class="stage-top">
+          <div class="stage-title">
+            <h2 id="rockTitle" style="margin:0 0 6px 0;">Your Rock</h2>
+            <div class="meta">
+              <span class="pill" id="pillPersonality">—</span>
+              <span class="pill" id="pillMood">—</span>
+              <span class="pill" id="pillDays">Days Together: —</span>
+            </div>
+          </div>
+          <div class="pill" id="pillHint">Tip: Polish = drag on rock</div>
+        </div>
+
+        <div class="bubble" id="bubble">
+          <div class="who" id="bubbleWho">RockBuddy</div>
+          <div class="text" id="bubbleText">...</div>
+        </div>
+
+        <div class="radial" aria-hidden="false">
+          <div class="rbtn r1" id="btnPolish">
+            <div class="icon">✦</div>
+            <div class="label"><span>Daily</span><strong>Polish</strong></div>
+          </div>
+          <div class="rbtn r2" id="btnListen">
+            <div class="icon">☁</div>
+            <div class="label"><span>Vent</span><strong>Listen</strong></div>
+          </div>
+          <div class="rbtn r3" id="btnTeach">
+            <div class="icon">⌁</div>
+            <div class="label"><span>Progress</span><strong>Teach</strong></div>
+          </div>
+          <div class="rbtn r4" id="btnIgnore">
+            <div class="icon">⌀</div>
+            <div class="label"><span>Chaos</span><strong>Ignore</strong></div>
+          </div>
+        </div>
+
+        <div class="rock-wrap">
+          <div id="rock" class="rock wiggle"></div>
+        </div>
+      </div>
+
+      <div class="card sidebar">
+        <h3 style="margin:0 0 6px 0;">Stats</h3>
+        <div class="subtle" id="statsExplain">
+          Hovering isn’t gameplay. Here’s the real info.
+        </div>
+
+        <div class="statbox">
+          <div class="statrow"><span class="subtle">Contentment</span><strong id="sContent">—</strong></div>
+          <div class="bar"><div class="fill" id="bContent"></div></div>
+
+          <div class="statrow"><span class="subtle">Philosophy</span><strong id="sPhilo">—</strong></div>
+          <div class="bar"><div class="fill" id="bPhilo"></div></div>
+
+          <div class="statrow"><span class="subtle">Dustiness</span><strong id="sDust">—</strong></div>
+          <div class="bar"><div class="fill" id="bDust"></div></div>
+
+          <div class="hr"></div>
+          <div class="statrow"><span class="subtle">Ignored Days</span><strong id="sIgnored">—</strong></div>
+          <div class="statrow"><span class="subtle">Last Seen</span><strong id="sLast">—</strong></div>
+        </div>
+
+        <div class="hr"></div>
+        <h3 style="margin:0 0 6px 0;">Achievements</h3>
+        <div class="subtle" id="achList">—</div>
+
+        <div class="hr"></div>
+        <h3 style="margin:0 0 6px 0;">Rock Thoughts</h3>
+        <div class="subtle" id="thoughtLog">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Listen modal -->
+  <div class="modal" id="modalListen">
+    <div class="box">
+      <div class="top">
+        <h4>Tell the rock what’s up</h4>
+        <button class="btn" data-close="modalListen">Close</button>
+      </div>
+      <div class="content">
+        <textarea id="listenInput" placeholder="Type your worries…"></textarea>
+        <div class="form-row">
+          <button id="listenSend" class="btn primary">Send to Rock</button>
+          <span class="small">Not therapy. Just vibes + sarcasm.</span>
+        </div>
+        <div class="reply" id="listenReply" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teach modal -->
+  <div class="modal" id="modalTeach">
+    <div class="box">
+      <div class="top">
+        <h4>Teach Philosophy</h4>
+        <button class="btn" data-close="modalTeach">Close</button>
+      </div>
+      <div class="content">
+        <p class="small" style="margin-top:0;">
+          Click “Read” a few times. Your rock pretends to understand. Eventually it might.
+        </p>
+        <div class="form-row">
+          <button id="teachRead" class="btn primary">Read to Rock</button>
+          <span class="pill" id="teachProgress">Enlightenment: —%</span>
+        </div>
+        <div class="reply" id="teachReply" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved.</div>
+
+  <script src="app.js"></script>
+  <script>
+    RockBuddy.initHomePage();
+  </script>
+</body>
+</html>
