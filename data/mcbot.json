@@ -1,0 +1,30 @@
+{
+  "name": "MCBot",
+  "tagline": "Minecraft username monitoring + secure admin dashboard",
+  "one_liner": "Self-hosted Discord bot that tracks Mojang username availability and sends real-time alerts, with a locked-down web dashboard.",
+  "highlights": [
+    "Continuously monitors Minecraft usernames via the Mojang API",
+    "Instant + scheduled availability checks",
+    "Real-time alerts when status changes",
+    "Server utility suite: purge, slowmode, channel lock/unlock",
+    "Audit logging for moderation actions",
+    "Admin-only dashboard protected by Cloudflare Zero Trust"
+  ],
+  "stack": ["Python", "Discord API", "SQLite", "Web Dashboard", "Cloudflare Zero Trust"],
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/yourname/mcbot" },
+    { "label": "Dashboard (private)", "url": "https://dashboard.yourdomain.com" },
+    { "label": "Demo Video", "url": "https://youtube.com/..." }
+  ],
+  "commands": [
+    { "slash": "/purge", "description": "Bulk delete messages with audit logging." },
+    { "slash": "/slowmode", "description": "Set channel slowmode with logging." },
+    { "slash": "/lock", "description": "Lock a channel (permissions) with logging." },
+    { "slash": "/unlock", "description": "Unlock a channel with logging." }
+  ],
+  "security": [
+    "Cloudflare Zero Trust protects the dashboard (admin-only access).",
+    "No bot tokens exposed to the frontend.",
+    "Role/permission checks for moderation commands."
+  ]
+}
