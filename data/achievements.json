@@ -1,0 +1,4 @@
+[
+  { "title": "Built my first full-stack app", "detail": "Firebase auth + realtime DB + admin panel.", "date": "2025" },
+  { "title": "Shipped a Discord bot", "detail": "Moderation + utility commands + logging.", "date": "2025" }
+]
