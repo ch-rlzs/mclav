@@ -1,61 +1,97 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RockBuddy — Adoption Agency</title>
+  <title>Charles — Portfolio</title>
+  <meta name="description" content="Projects, achievements, and Discord bot work." />
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="brand">
-        <h1>RockBuddy</h1>
-        <p>The pet that won’t die. Probably.</p>
-      </div>
-      <div class="split">
-        <span class="pill">Desktop-first</span>
-        <span class="pill">Local save</span>
-        <span class="pill">Zero guilt (mostly)</span>
-      </div>
-    </div>
-
-    <div class="grid">
-      <div class="card hero">
-        <h2>The Adoption Agency</h2>
-        <p>
-          Choose your rock. Give it a name. Pretend you’re not emotionally attached within 48 hours.
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <h1>Hello, I’m <span class="accent">Charles</span>.</h1>
+        <p class="sub">
+          I build stuff. Clean, fast, and actually finished.
         </p>
 
-        <div class="form-row">
-          <input id="rockName" class="input" placeholder="Name your rock (or generate one)" maxlength="32" />
-          <button id="genName" class="btn">Generate</button>
+        <div class="links">
+          <a class="chip" href="mailto:you@example.com">Email</a>
+          <a class="chip" href="https://github.com/yourname" target="_blank" rel="noreferrer">GitHub</a>
+          <a class="chip" href="https://www.linkedin.com/in/yourname" target="_blank" rel="noreferrer">LinkedIn</a>
         </div>
-        <div class="form-row">
-          <button id="adopt" class="btn primary">Adopt Now</button>
-          <span class="small">Tip: press <span class="kbd">G</span> to generate</span>
+      </div>
+
+      <div class="card mini">
+        <div class="kicker">Now</div>
+        <div class="mini-line"><span class="dot"></span><span id="nowText">Loading…</span></div>
+        <div class="mini-small" id="nowSmall">A-Levels: Maths / Physics / CS</div>
+      </div>
+    </header>
+
+    <section>
+      <h2>Skills</h2>
+      <div class="skills">
+        <span class="pill">Python</span>
+        <span class="pill">JavaScript</span>
+        <span class="pill">HTML/CSS</span>
+        <span class="pill">Firebase</span>
+        <span class="pill">Discord Bots</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Projects</h2>
+        <input id="projectSearch" class="search" placeholder="Search projects…" />
+      </div>
+      <div id="projects" class="grid"></div>
+    </section>
+
+    <section>
+      <h2>Achievements</h2>
+      <div id="achievements" class="stack"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Discord Bot</h2>
+        <span class="muted" id="botTag"></span>
+      </div>
+
+      <div class="bot">
+        <div class="card">
+          <h3 id="botName">Loading…</h3>
+          <p class="muted" id="botDesc"></p>
+
+          <div class="btns">
+            <a id="botInvite" class="btn" target="_blank" rel="noreferrer">Invite Bot</a>
+            <a id="botSupport" class="btn ghost" target="_blank" rel="noreferrer">Support Server</a>
+          </div>
+
+          <h4>Commands</h4>
+          <div id="botCommands" class="cmds"></div>
         </div>
 
-        <div class="hr"></div>
-        <p class="small">
-          If you already adopted a rock earlier, adopting again overwrites the save. Yes, that’s ruthless. So are you.
-        </p>
+        <div class="card">
+          <h3>Bot Preview</h3>
+          <p class="muted">
+            If you have a support server, you can embed the Discord widget here.
+          </p>
+          <div id="botWidget" class="widget muted">
+            Add your Discord server widget URL in <code>data/bot.json</code>.
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="card rock-picker">
-        <h2 style="margin:0 0 6px 0; font-size:18px;">Pick a personality</h2>
-        <p class="small" style="margin:0 0 10px 0;">
-          Pick based on how much chaos you can handle.
-        </p>
-
-        <div class="rock-list" id="rockList"></div>
-      </div>
-    </div>
+    <footer class="footer">
+      <span class="muted">© <span id="year"></span> Charles</span>
+    </footer>
   </div>
 
   <script src="app.js"></script>
-  <script>
-    RockBuddy.initAdoptionPage();
-  </script>
 </body>
 </html>
