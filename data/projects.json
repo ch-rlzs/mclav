@@ -1,2 +1,13 @@
 [
+  {
+  "title": "MCBot — Minecraft Username Monitor",
+  "description": "Self-hosted Discord bot that monitors Mojang usernames, runs instant/scheduled checks, and alerts on status changes. Includes a secure admin dashboard + mod utilities with audit logs.",
+  "image": "./assets/mcbot.png",
+  "tags": ["Discord Bot", "SQLite", "Mojang API", "Cloudflare Zero Trust"],
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/yourname/mcbot" },
+    { "label": "Demo", "url": "https://youtube.com/..." }
+  ]
+}
+
 ]
