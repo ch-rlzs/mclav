@@ -1,96 +1,562 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Charles — Portfolio</title>
-  <meta name="description" content="Projects, achievements, and Discord bot work." />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #111110;
+      --ink-muted: #6b6b68;
+      --ink-faint: #a8a8a4;
+      --surface: #f7f6f2;
+      --white: #ffffff;
+      --rule: #e2e1db;
+      --accent: #2a5caa;
+      --accent-light: #eef3fb;
+      --radius: 4px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      background: var(--white);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule);
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--ink-muted);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.18s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── LAYOUT ── */
+    section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    section + section { border-top: 1px solid var(--rule); }
+
+    /* ── HERO ── */
+    #hero {
+      padding-top: 7rem;
+      padding-bottom: 7rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: end;
+    }
+    .hero-eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+    .hero-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    .hero-bio {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+      max-width: 480px;
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: all 0.18s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--white);
+    }
+    .btn-primary:hover { background: #333; }
+    .btn-outline {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--rule);
+    }
+    .btn-outline:hover { border-color: var(--ink-muted); }
+    .hero-status {
+      font-size: 0.775rem;
+      color: var(--ink-faint);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4caf7d;
+      flex-shrink: 0;
+    }
+    .hero-aside {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+      padding-bottom: 0.25rem;
+    }
+    .hero-stat { text-align: right; }
+    .hero-stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .hero-stat-label {
+      font-size: 0.75rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+    .stat-rule {
+      width: 1px;
+      height: 32px;
+      background: var(--rule);
+      margin: 0.25rem auto;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 3rem;
+      line-height: 1.2;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-text p { color: var(--ink-muted); line-height: 1.8; margin-bottom: 1rem; font-weight: 300; }
+    .about-facts { display: flex; flex-direction: column; gap: 1.25rem; }
+    .fact-row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .fact-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .fact-key {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      font-weight: 500;
+      width: 80px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .fact-val { font-size: 0.9rem; color: var(--ink); }
+
+    /* ── PROJECTS ── */
+    .projects-grid { display: flex; flex-direction: column; gap: 2rem; }
+    .project-card {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 1.25rem;
+      padding: 1.5rem;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      transition: border-color 0.18s, background 0.18s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .project-card:hover {
+      border-color: var(--ink-muted);
+      background: var(--surface);
+    }
+    .project-icon {
+      width: 48px; height: 48px;
+      background: var(--accent-light);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+    }
+    .project-title {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .project-tag {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+    }
+    .project-desc { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.65; }
+    .project-stack {
+      margin-top: 0.75rem;
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .stack-pill {
+      font-size: 0.75rem;
+      color: var(--ink-faint);
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 2px 10px;
+      border-radius: 100px;
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-group-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+    .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .skill-list li {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .skill-list li::before {
+      content: '';
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── CONTACT ── */
+    .contact-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .contact-copy h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .contact-copy p { color: var(--ink-muted); font-weight: 300; max-width: 360px; }
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+    .contact-link {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.18s;
+    }
+    .contact-link:hover { color: var(--ink); }
+    .contact-link-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      width: 40px;
+      text-align: right;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 2rem;
+      text-align: center;
+    }
+    footer p { font-size: 0.8rem; color: var(--ink-faint); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      #hero { grid-template-columns: 1fr; }
+      .hero-aside { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .contact-row { flex-direction: column; align-items: flex-start; }
+      .contact-links { align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <header class="hero">
-      <div>
-        <h1>Hello, I’m <span class="accent">Charles</span>.</h1>
-        <p class="sub">
-          I try and create random ideas that come to mind.
-        </p>
 
-        <div class="links">
-          <a class="chip" href="mailto:chrlzs.chizl@gmail.com">Email</a>
-          <a class="chip" href="https://github.com/ch-rlzs" target="_blank" rel="noreferrer">GitHub</a>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="#hero">Charles</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div>
+      <p class="hero-eyebrow">Portfolio</p>
+      <h1 class="hero-name">Hi, I'm<br>Charles.</h1>
+      <p class="hero-bio">I build things I find interesting — from creative coding projects to games and beyond. Welcome to my little corner of the web.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary">View my work</a>
+        <a href="#contact" class="btn btn-outline">Get in touch</a>
+      </div>
+      <div style="margin-top:1.75rem;">
+        <span class="hero-status"><span class="status-dot"></span>Open to new opportunities</span>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="hero-stat">
+        <div class="hero-stat-num">3+</div>
+        <div class="hero-stat-label">Years coding</div>
+      </div>
+      <div class="stat-rule"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">6</div>
+        <div class="hero-stat-label">Projects</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-label">About me</p>
+    <h2 class="section-title">A bit about who I am</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm Charles, a curious coder based in England. I got into coding through a love of maths and problem-solving, and it stuck.</p>
+        <p>Most of my projects sit at the intersection of logic and creativity — whether that's writing a text adventure, exploring algorithms, or building tools that solve real problems.</p>
+        
+      </div>
+      <div class="about-facts">
+        <div class="fact-row">
+          <span class="fact-key">Location</span>
+          <span class="fact-val">Lancashire, England 🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Interests</span>
+          <span class="fact-val">Physics, maths, creative programming</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Studying</span>
+          <span class="fact-val">Self-taught developer</span>
+          <span class="fact-val">Electrical T-Level Engineering</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Status</span>
+          <span class="fact-val">Open to collaborations</span>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="card mini">
-        <div class="kicker">Now</div>
-        <div class="mini-line"><span class="dot"></span><span id="nowText">Loading…</span></div>
-        <div class="mini-small" id="nowSmall">T-Level Electrical Engineering</div>
-      </div>
-    </header>
+  <!-- PROJECTS -->
+  <section id="projects">
+    <p class="section-label">Work</p>
+    <h2 class="section-title">Projects I've built</h2>
+    <div class="projects-grid">
 
-    <section>
-      <h2>Skills</h2>
-      <div class="skills">
-        <span class="pill">Python</span>
-        <span class="pill">JavaScript</span>
-        <span class="pill">HTML/CSS</span>
-        <span class="pill">Firebase</span>
-        <span class="pill">Discord Bots</span>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-head">
-        <h2>Projects</h2>
-        <input id="projectSearch" class="search" placeholder="Search projects…" />
-      </div>
-      <div id="projects" class="grid"></div>
-    </section>
-
-    <section>
-      <h2>Achievements</h2>
-      <div id="achievements" class="stack"></div>
-    </section>
-
-    <section>
-      <div class="section-head">
-        <h2>Discord Bot</h2>
-        <span class="muted" id="botTag"></span>
-      </div>
-
-      <div class="bot">
-        <div class="card">
-          <h3 id="botName">Discord Minecraft Name Checker…</h3>
-          <p class="muted" id="botDesc"></p>
-
-          <div class="btns">
-            <a id="botInvite" class="btn" target="_blank" rel="noreferrer">Not currently invitable</a>
-            <a id="botSupport" class="btn ghost" target="_blank" rel="noreferrer">Support Server on its way</a>
-          </div>
-
-          <h4>Commands</h4>
-          <div id="botCommands" class="cmds"></div>
-        </div>
-
-        <div class="card">
-          <h3>Bot Preview</h3>
-          <p class="muted">
-            If you have a support server, you can embed the Discord widget here.
+      <a class="project-card" href="https://github.com/ch-rlzs/Unseen-Paths" target="_blank" rel="noopener">
+        <div class="project-icon">🗺️</div>
+        <div>
+          <p class="project-title">
+            Text Adventure Game 'Unseen Paths'
+            <span class="project-tag">In progress</span>
           </p>
-          <div id="botWidget" class="widget muted">
-            Add your Discord server widget URL in <code>data/bot.json</code>.
+          <p class="project-desc">A Python-based narrative adventure with branching storylines, a dark/light path structure, a combat system, and save state tracking. Built from scratch with city-based world progression.</p>
+          <div class="project-stack">
+            <span class="stack-pill">Python</span>
+            <span class="stack-pill">Game logic</span>
+            <span class="stack-pill">Narrative design</span>
           </div>
         </div>
+      </a>
+
+      <a class="project-card" href="https://discord.com/oauth2/authorize?client_id=1456667170061942814" target="_blank" rel="noopener">
+        <div class="project-icon">📐</div>
+        <div>
+          <p class="project-title">Minecraft Name Checker</p>
+          <p class="project-desc">A simple tool for checking the availability of Minecraft player names. Built with python and hosted on a vps.</p>
+          <div class="project-stack">
+            <span class="stack-pill">HTML / CSS</span>
+            <span class="stack-pill">JavaScript</span>
+            <span class="stack-pill">Maths</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/ch-rlzs/mclavs-launcher"> target="_blank" rel="noopener">
+        <div class="project-icon">✨</div>
+        <div>
+          <p class="project-title">Launching Hub????
+            <span class="project-tag">In progress</span>
+          </p>
+          <p class="project-desc">A small project i am working on that lets you quickly find and launch your favorite applications.</p>
+          <div class="project-stack">
+            <span class="stack-pill">Python</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <p class="section-label">Skills</p>
+    <h2 class="section-title">What I work with</h2>
+    <div class="skills-grid">
+      <div>
+        <p class="skill-group-title">Languages</p>
+        <ul class="skill-list">
+          <li>Python</li>
+          <li>A small amount of HTML &amp; CSS</li>
+          <li>And an ever smaller amount of JavaScript</li>
+        </ul>
       </div>
-    </section>
+      <div>
+        <p class="skill-group-title">Areas</p>
+        <ul class="skill-list">
+          <li>Game development</li>
+          <li>Creative coding</li>
+          <li>Algorithm design</li>
+          <li>Applied mathematics</li>
+        </ul>
+      </div>
+      <div>
+        <p class="skill-group-title">Tools &amp; methods</p>
+        <ul class="skill-list">
+          <li>Version control (Git)</li>
+          <li>Problem decomposition</li>
+          <li>Visual prototyping</li>
+        </ul>
+      </div>
+      <div>
+        <p class="skill-group-title">Learning</p>
+        <ul class="skill-list">
+          <li>Data structures</li>
+          <li>Web development</li>
+          <li>Interactive design</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-    <footer class="footer">
-      <span class="muted">© <span id="year"></span> Charles</span>
-    </footer>
-  </div>
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-row">
+      <div class="contact-copy">
+        <h2>Let's talk.</h2>
+        <p>Have a project idea, want to collaborate, or just want to say hello? I'd love to hear from you.</p>
+        <a href="mailto:chrlzs.chizl@gmail.com" class="btn btn-primary" style="margin-top:1.5rem; display:inline-block;">Send me an email</a>
+      </div>
+      <div class="contact-links">
+        <a href="mailto:chrlzs.chizl@gmail.com" class="contact-link">
+          <span class="contact-link-label">Email</span>
+          chrlzs.chizl@gmail.com
+        </a>
+        <a href="https://github.com/ch-rlzs" class="contact-link" target="_blank" rel="noopener">
+          <span class="contact-link-label">GitHub</span>
+          github.com/charles
+        </a>
+       
+      </div>
+    </div>
+  </section>
 
-  <script src="app.js"></script>
+  <footer>
+    <p>© 2026 Charles — Built with care.</p>
+  </footer>
+
 </body>
 </html>
