@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Charles — Discord Bots</title>
+  <meta name="description" content="Discord bots built by Charles — a self-taught developer from Lancashire." />
+ 
+  <link rel="icon" type="image/png" sizes="32x32" href="Untitled.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+ 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+ 
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --ink: #111110;
+      --ink-muted: #6b6b68;
+      --ink-faint: #a8a8a4;
+      --surface: #f7f6f2;
+      --white: #ffffff;
+      --rule: #e2e1db;
+      --accent: #2a5caa;
+      --accent-light: #eef3fb;
+      --nav-bg: rgba(255,255,255,0.92);
+      --radius: 4px;
+      --discord: #5865F2;
+      --discord-light: #edeffd;
+    }
+ 
+    body.dark {
+      --ink: #f0eeea;
+      --ink-muted: #a8a6a0;
+      --ink-faint: #6b6966;
+      --surface: #1e1e1c;
+      --white: #141413;
+      --rule: #2e2e2b;
+      --accent: #6b9de8;
+      --accent-light: #1a2535;
+      --nav-bg: rgba(20,20,19,0.92);
+      --discord: #7289da;
+      --discord-light: #1e2040;
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      background: var(--white);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.7;
+      transition: background 0.25s, color 0.25s;
+    }
+ 
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--nav-bg);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule);
+      z-index: 100;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--ink-muted);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.18s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active { color: var(--ink); font-weight: 500; }
+ 
+    #theme-toggle {
+      background: none;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px 8px;
+      line-height: 1;
+      color: var(--ink-muted);
+      transition: border-color 0.18s, color 0.18s;
+    }
+    #theme-toggle:hover { border-color: var(--ink-muted); color: var(--ink); }
+ 
+    /* ── LAYOUT ── */
+    section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    section + section { border-top: 1px solid var(--rule); }
+ 
+    /* ── HERO ── */
+    #hero {
+      padding-top: 7rem;
+      padding-bottom: 5rem;
+    }
+    .hero-eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--discord);
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+    .hero-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .hero-bio {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+      max-width: 520px;
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .hero-stat { text-align: left; }
+    .hero-stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .hero-stat-label { font-size: 0.75rem; color: var(--ink-faint); letter-spacing: 0.04em; }
+    .stat-divider { width: 1px; background: var(--rule); align-self: stretch; }
+ 
+    /* ── SECTION HEADER ── */
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 3rem;
+      line-height: 1.2;
+    }
+ 
+    /* ── BOT GRID ── */
+    .bots-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+ 
+    .bot-card {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 1.25rem;
+      padding: 1.5rem;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      transition: border-color 0.18s, background 0.18s;
+      align-items: center;
+    }
+    .bot-card:hover { border-color: var(--ink-muted); background: var(--surface); }
+ 
+    /* Live bot gets a subtle discord-tinted left border */
+    .bot-card.live {
+      border-left: 3px solid var(--discord);
+    }
+ 
+    .bot-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--discord-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+ 
+    .bot-coming .bot-icon {
+      background: var(--surface);
+      border: 1px dashed var(--rule);
+    }
+ 
+    .bot-info { min-width: 0; }
+ 
+    .bot-title {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+ 
+    .bot-badge {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+    }
+    .badge-live {
+      background: var(--discord-light);
+      color: var(--discord);
+    }
+    .badge-soon {
+      background: var(--surface);
+      color: var(--ink-faint);
+      border: 1px solid var(--rule);
+    }
+    .badge-progress {
+      background: #fff8e1;
+      color: #b07d00;
+      border: 1px solid #ffe082;
+    }
+    body.dark .badge-progress {
+      background: #2a2200;
+      color: #f0c040;
+      border-color: #5a4500;
+    }
+ 
+    .bot-desc {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      line-height: 1.65;
+      margin-bottom: 0.6rem;
+    }
+ 
+    .bot-coming .bot-desc { font-style: italic; }
+ 
+    .bot-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 0.5rem;
+    }
+    .feature-pill {
+      font-size: 0.75rem;
+      color: var(--ink-faint);
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 2px 10px;
+      border-radius: 100px;
+    }
+ 
+    /* Add to server button */
+    .btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      background: var(--discord);
+      color: #fff;
+      transition: opacity 0.18s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-add:hover { opacity: 0.85; }
+    .btn-add-ghost {
+      background: transparent;
+      color: var(--ink-faint);
+      border: 1px solid var(--rule);
+      cursor: default;
+    }
+    .btn-add-ghost:hover { opacity: 1; }
+ 
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--rule); padding: 2rem; text-align: center; }
+    footer p { font-size: 0.8rem; color: var(--ink-faint); }
+ 
+    /* ── BACK LINK ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--ink-faint);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.18s;
+    }
+    .back-link:hover { color: var(--ink); }
+ 
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .bot-card { grid-template-columns: 48px 1fr; }
+      .btn-add { display: none; }
+      .bot-title .btn-add-mobile {
+        display: inline-flex;
+      }
+      .nav-links { gap: 1rem; }
+      .hero-meta { gap: 1.25rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+ 
+<body class="dark">
+ 
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">Charles</a>
+      <div class="nav-right">
+        <ul class="nav-links">
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#projects">Projects</a></li>
+          <li><a href="discordbots.html" class="active">Discord Bots</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+        <button id="theme-toggle" aria-label="Toggle light/dark mode">☀️</button>
+      </div>
+    </div>
+  </nav>
+ 
+  <section id="hero">
+    <a href="index.html" class="back-link">← Back to portfolio</a>
+    <p class="hero-eyebrow">Discord Bots</p>
+    <h1 class="hero-name">Bots I've built</h1>
+    <p class="hero-bio">A collection of Discord bots I've made — from utilities to tools, with more on the way.</p>
+    <div class="hero-meta">
+      <div class="hero-stat">
+        <div class="hero-stat-num">1</div>
+        <div class="hero-stat-label">Live bot</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">3</div>
+        <div class="hero-stat-label">In the works</div>
+      </div>
+    </div>
+  </section>
+ 
+  <section id="bots">
+    <p class="section-label">All bots</p>
+    <h2 class="section-title">Live &amp; coming soon</h2>
+ 
+    <div class="bots-grid">
+ 
+      <!-- ── LIVE BOT ── -->
+      <div class="bot-card live">
+        <div class="bot-icon">🎮</div>
+        <div class="bot-info">
+          <p class="bot-title">
+            Minecraft Name Checker
+            <span class="bot-badge badge-live">Live</span>
+          </p>
+          <p class="bot-desc">Check whether a Minecraft Java Edition username is available — right from Discord. Built with Python and hosted on a VPS.</p>
+          <div class="bot-features">
+            <span class="feature-pill">Name availability</span>
+            <span class="feature-pill">Python</span>
+            <span class="feature-pill">VPS hosted</span>
+          </div>
+        </div>
+        <a class="btn-add" href="https://discord.com/oauth2/authorize?client_id=1456667170061942814" target="_blank" rel="noopener noreferrer">
+          + Add to server
+        </a>
+      </div>
+ 
+      <!-- ── COMING SOON: ADMIN BOT ── -->
+      <div class="bot-card bot-coming">
+        <div class="bot-icon">🛡️</div>
+        <div class="bot-info">
+          <p class="bot-title">
+            Admin Bot
+            <span class="bot-badge badge-soon">Coming soon</span>
+          </p>
+          <p class="bot-desc">A server management bot for moderating members, setting up auto-roles, logging actions, and keeping your server clean.</p>
+          <div class="bot-features">
+            <span class="feature-pill">Moderation</span>
+            <span class="feature-pill">Auto-roles</span>
+            <span class="feature-pill">Action logging</span>
+            <span class="feature-pill">Kick / ban / mute</span>
+          </div>
+        </div>
+        <span class="btn-add btn-add-ghost">Coming soon</span>
+      </div>
+ 
+      <!-- ── COMING SOON: MUSIC BOT ── -->
+      <div class="bot-card bot-coming">
+        <div class="bot-icon">🎵</div>
+        <div class="bot-info">
+          <p class="bot-title">
+            Music Bot
+            <span class="bot-badge badge-soon">Coming soon</span>
+          </p>
+          <p class="bot-desc">Play music in voice channels with queue management, skip voting, and volume control. Supports YouTube and more.</p>
+          <div class="bot-features">
+            <span class="feature-pill">Queue system</span>
+            <span class="feature-pill">Voice channel</span>
+            <span class="feature-pill">Skip voting</span>
+            <span class="feature-pill">YouTube</span>
+          </div>
+        </div>
+        <span class="btn-add btn-add-ghost">Coming soon</span>
+      </div>
+ 
+      <!-- ── COMING SOON: UTILITY BOT ── -->
+      <div class="bot-card bot-coming">
+        <div class="bot-icon">🔧</div>
+        <div class="bot-info">
+          <p class="bot-title">
+            Utility Bot
+            <span class="bot-badge badge-soon">Coming soon</span>
+          </p>
+          <p class="bot-desc">A general-purpose utility bot — polls, reminders, server info, weather lookups, and a collection of handy commands.</p>
+          <div class="bot-features">
+            <span class="feature-pill">Polls</span>
+            <span class="feature-pill">Reminders</span>
+            <span class="feature-pill">Server info</span>
+            <span class="feature-pill">Weather</span>
+          </div>
+        </div>
+        <span class="btn-add btn-add-ghost">Coming soon</span>
+      </div>
+ 
+    </div>
+  </section>
+ 
+  <footer>
+    <p>© 2026 Charles — Built with care.</p>
+  </footer>
+ 
+  <script>
+    const btn = document.getElementById('theme-toggle');
+    const body = document.body;
+ 
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      body.classList.remove('dark');
+      btn.textContent = '🌙';
+    } else {
+      body.classList.add('dark');
+      btn.textContent = '☀️';
+    }
+ 
+    btn.addEventListener('click', () => {
+      const isDark = body.classList.toggle('dark');
+      btn.textContent = isDark ? '☀️' : '🌙';
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+  </script>
+ 
+</body>
+</html>
